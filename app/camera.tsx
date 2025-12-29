@@ -1,7 +1,6 @@
 import React, { useState, useRef } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   Platform,
@@ -13,10 +12,15 @@ import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { X, RotateCcw, ImageIcon, Zap, Check } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import Colors from '@/constants/colors';
+
+import { useTheme } from '@/contexts/ThemeContext';
+import { Screen } from '@/components/ui/Screen';
+import { Text } from '@/components/ui/Typography';
+import { Button } from '@/components/ui/Button';
 
 export default function CameraScreen() {
   const router = useRouter();
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const [facing, setFacing] = useState<CameraType>('front');
   const [permission, requestPermission] = useCameraPermissions();
@@ -80,109 +84,131 @@ export default function CameraScreen() {
     });
   };
 
+  // Loading State
   if (!permission) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
-        <View style={styles.permissionContainer}>
-          <Text style={styles.permissionText}>Loading camera...</Text>
-        </View>
-      </View>
+      <Screen style={{ justifyContent: 'center', alignItems: 'center' }}>
+        <Text variant="body">Loading camera...</Text>
+      </Screen>
     );
   }
 
+  // No Permission State
   if (!permission.granted) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
-        <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-          <X color={Colors.text} size={28} />
+      <Screen style={{ padding: 24 }}>
+        <TouchableOpacity style={styles.closeButtonTop} onPress={handleClose}>
+          <X color={theme.colors.textPrimary} size={28} />
         </TouchableOpacity>
-        <View style={styles.permissionContainer}>
-          <Text style={styles.permissionTitle}>Camera Access Needed 📸</Text>
-          <Text style={styles.permissionText}>
+        
+        <View style={styles.permissionContent}>
+          <Text variant="h1" weight="bold" align="center" style={{ marginBottom: 12 }}>
+            Camera Access Needed 📸
+          </Text>
+          <Text variant="body" color={theme.colors.textSecondary} align="center" style={{ marginBottom: 32 }}>
             We need camera access to capture your beautiful selfies!
           </Text>
-          <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
-            <Text style={styles.permissionButtonText}>Grant Permission</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.galleryButton} onPress={handlePickImage}>
-            <ImageIcon color={Colors.primary} size={20} />
-            <Text style={styles.galleryButtonText}>Choose from Gallery</Text>
-          </TouchableOpacity>
+          
+          <Button 
+            label="Grant Permission" 
+            onPress={requestPermission} 
+            fullWidth 
+            style={{ marginBottom: 16 }}
+          />
+          <Button 
+            label="Choose from Gallery" 
+            variant="secondary" 
+            icon={<ImageIcon size={20} color={theme.colors.textPrimary} />}
+            onPress={handlePickImage}
+            fullWidth
+          />
         </View>
-      </View>
+      </Screen>
     );
   }
 
+  // Preview State (Image Captured)
   if (capturedImage) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
-        <Image source={{ uri: capturedImage }} style={styles.preview} />
-        <View style={styles.previewOverlay}>
-          <View style={styles.previewHeader}>
-            <TouchableOpacity style={styles.previewButton} onPress={handleRetake}>
-              <RotateCcw color={Colors.text} size={24} />
-              <Text style={styles.previewButtonText}>Retake</Text>
+      <Screen safeArea={false} style={{ backgroundColor: '#000' }}>
+        <Image source={{ uri: capturedImage }} style={styles.fullScreen} />
+        
+        <View style={[styles.overlay, { paddingTop: insets.top, paddingBottom: insets.bottom + 20 }]}>
+          <View style={styles.header}>
+            <TouchableOpacity style={styles.pillButton} onPress={handleRetake}>
+              <RotateCcw color={theme.colors.textPrimary} size={20} />
+              <Text weight="semibold" style={{ marginLeft: 8 }}>Retake</Text>
             </TouchableOpacity>
           </View>
-          <View style={styles.previewFooter}>
-            <Text style={styles.previewTitle}>Looking good? ✨</Text>
-            <TouchableOpacity style={styles.confirmButton} onPress={handleConfirm}>
-              <Check color="#fff" size={28} />
-              <Text style={styles.confirmText}>Analyze My Glow</Text>
-            </TouchableOpacity>
+          
+          <View style={styles.footer}>
+            <Text variant="h2" weight="bold" style={{ marginBottom: 20 }}>
+              Looking good? ✨
+            </Text>
+            <Button 
+              label="Analyze My Glow" 
+              icon={<Check size={20} color={theme.colors.primaryForeground} />}
+              onPress={handleConfirm}
+              size="l"
+            />
           </View>
         </View>
-      </View>
+      </Screen>
     );
   }
 
+  // Camera Viewfinder State
   return (
-    <View style={styles.container}>
+    <View style={styles.fullScreen}>
       {Platform.OS === 'web' ? (
-        <View style={styles.webFallback}>
-          <Text style={styles.webFallbackText}>Camera preview not available on web</Text>
-          <TouchableOpacity style={styles.galleryButton} onPress={handlePickImage}>
-            <ImageIcon color={Colors.primary} size={20} />
-            <Text style={styles.galleryButtonText}>Choose from Gallery</Text>
-          </TouchableOpacity>
-        </View>
+        <Screen style={{ justifyContent: 'center', alignItems: 'center', gap: 24 }}>
+          <Text color={theme.colors.textSecondary}>Camera preview not available on web</Text>
+          <Button 
+            label="Choose from Gallery" 
+            variant="secondary"
+            icon={<ImageIcon size={20} color={theme.colors.textPrimary} />}
+            onPress={handlePickImage}
+          />
+        </Screen>
       ) : (
         <CameraView
           ref={cameraRef}
-          style={styles.camera}
+          style={styles.fullScreen}
           facing={facing}
           mirror={facing === 'front'}
         />
       )}
 
-      <View style={[styles.overlay, { paddingTop: insets.top }]}>
+      <View style={[styles.overlay, { paddingTop: insets.top, paddingBottom: insets.bottom + 20 }]}>
         <View style={styles.header}>
-          <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-            <X color={Colors.text} size={28} />
+          <TouchableOpacity style={styles.circleButton} onPress={handleClose}>
+            <X color={theme.colors.textPrimary} size={24} />
           </TouchableOpacity>
-          <View style={styles.flashBadge}>
-            <Zap color={Colors.accent} size={18} />
+          <View style={styles.circleButton}>
+            <Zap color={theme.colors.accent} size={20} fill={theme.colors.accent} />
           </View>
         </View>
 
+        {/* Guide Frame */}
         <View style={styles.guideFrame}>
-          <View style={styles.cornerTL} />
-          <View style={styles.cornerTR} />
-          <View style={styles.cornerBL} />
-          <View style={styles.cornerBR} />
+          <View style={[styles.corner, styles.tl, { borderColor: theme.colors.primary }]} />
+          <View style={[styles.corner, styles.tr, { borderColor: theme.colors.primary }]} />
+          <View style={[styles.corner, styles.bl, { borderColor: theme.colors.primary }]} />
+          <View style={[styles.corner, styles.br, { borderColor: theme.colors.primary }]} />
         </View>
 
-        <View style={[styles.controls, { paddingBottom: insets.bottom + 20 }]}>
-          <TouchableOpacity style={styles.sideButton} onPress={handlePickImage}>
-            <ImageIcon color={Colors.text} size={28} />
+        {/* Controls */}
+        <View style={styles.controls}>
+          <TouchableOpacity style={styles.sideControl} onPress={handlePickImage}>
+            <ImageIcon color={theme.colors.textPrimary} size={28} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.captureButton} onPress={handleCapture}>
+          <TouchableOpacity style={[styles.captureButton, { borderColor: theme.colors.primary }]} onPress={handleCapture}>
             <View style={styles.captureInner} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.sideButton} onPress={toggleCameraFacing}>
-            <RotateCcw color={Colors.text} size={28} />
+          <TouchableOpacity style={styles.sideControl} onPress={toggleCameraFacing}>
+            <RotateCcw color={theme.colors.textPrimary} size={28} />
           </TouchableOpacity>
         </View>
       </View>
@@ -191,233 +217,93 @@ export default function CameraScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
+  fullScreen: {
     flex: 1,
     backgroundColor: '#000',
-  },
-  camera: {
-    flex: 1,
-  },
-  webFallback: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: Colors.background,
-    gap: 24,
-  },
-  webFallbackText: {
-    color: Colors.textSecondary,
-    fontSize: 16,
   },
   overlay: {
     ...StyleSheet.absoluteFillObject,
     justifyContent: 'space-between',
   },
+  closeButtonTop: {
+    marginBottom: 40,
+  },
+  permissionContent: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
     paddingHorizontal: 20,
     paddingTop: 12,
   },
-  closeButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
+  footer: {
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingBottom: 20,
+  },
+  circleButton: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: 'rgba(0,0,0,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  flashBadge: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
+  pillButton: {
+    flexDirection: 'row',
     alignItems: 'center',
+    backgroundColor: 'rgba(0,0,0,0.5)',
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 24,
   },
   guideFrame: {
     width: 280,
-    height: 280,
+    height: 340,
     alignSelf: 'center',
     position: 'relative',
   },
-  cornerTL: {
+  corner: {
     position: 'absolute',
-    top: 0,
-    left: 0,
     width: 40,
     height: 40,
-    borderTopWidth: 3,
-    borderLeftWidth: 3,
-    borderColor: Colors.primary,
-    borderTopLeftRadius: 20,
+    borderWidth: 4,
   },
-  cornerTR: {
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    width: 40,
-    height: 40,
-    borderTopWidth: 3,
-    borderRightWidth: 3,
-    borderColor: Colors.primary,
-    borderTopRightRadius: 20,
-  },
-  cornerBL: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    width: 40,
-    height: 40,
-    borderBottomWidth: 3,
-    borderLeftWidth: 3,
-    borderColor: Colors.primary,
-    borderBottomLeftRadius: 20,
-  },
-  cornerBR: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 40,
-    height: 40,
-    borderBottomWidth: 3,
-    borderRightWidth: 3,
-    borderColor: Colors.primary,
-    borderBottomRightRadius: 20,
-  },
+  tl: { top: 0, left: 0, borderBottomWidth: 0, borderRightWidth: 0, borderTopLeftRadius: 24 },
+  tr: { top: 0, right: 0, borderBottomWidth: 0, borderLeftWidth: 0, borderTopRightRadius: 24 },
+  bl: { bottom: 0, left: 0, borderTopWidth: 0, borderRightWidth: 0, borderBottomLeftRadius: 24 },
+  br: { bottom: 0, right: 0, borderTopWidth: 0, borderLeftWidth: 0, borderBottomRightRadius: 24 },
+  
   controls: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
     alignItems: 'center',
-    gap: 48,
-    paddingVertical: 32,
+    paddingBottom: 20,
   },
-  sideButton: {
+  sideControl: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+    backgroundColor: 'rgba(255,255,255,0.1)',
     justifyContent: 'center',
     alignItems: 'center',
   },
   captureButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: Colors.primary,
+    width: 84,
+    height: 84,
+    borderRadius: 42,
+    borderWidth: 4,
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 4,
-    borderColor: 'rgba(255,255,255,0.5)',
+    backgroundColor: 'transparent',
   },
   captureInner: {
-    width: 64,
-    height: 64,
-    borderRadius: 32,
+    width: 68,
+    height: 68,
+    borderRadius: 34,
     backgroundColor: '#fff',
-  },
-  preview: {
-    flex: 1,
-    backgroundColor: '#000',
-  },
-  previewOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    justifyContent: 'space-between',
-  },
-  previewHeader: {
-    flexDirection: 'row',
-    padding: 20,
-    paddingTop: 60,
-  },
-  previewButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    borderRadius: 24,
-  },
-  previewButtonText: {
-    color: Colors.text,
-    fontSize: 16,
-    fontWeight: '600' as const,
-  },
-  previewFooter: {
-    alignItems: 'center',
-    padding: 32,
-    paddingBottom: 48,
-  },
-  previewTitle: {
-    fontSize: 24,
-    fontWeight: '700' as const,
-    color: Colors.text,
-    marginBottom: 20,
-    textShadowColor: 'rgba(0,0,0,0.5)',
-    textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 4,
-  },
-  confirmButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 32,
-    paddingVertical: 18,
-    borderRadius: 30,
-  },
-  confirmText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: '700' as const,
-  },
-  permissionContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 32,
-    backgroundColor: Colors.background,
-  },
-  permissionTitle: {
-    fontSize: 28,
-    fontWeight: '700' as const,
-    color: Colors.text,
-    marginBottom: 12,
-    textAlign: 'center',
-  },
-  permissionText: {
-    fontSize: 16,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-    marginBottom: 32,
-    lineHeight: 24,
-  },
-  permissionButton: {
-    backgroundColor: Colors.primary,
-    paddingHorizontal: 32,
-    paddingVertical: 16,
-    borderRadius: 28,
-    marginBottom: 16,
-  },
-  permissionButtonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: '700' as const,
-  },
-  galleryButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    paddingHorizontal: 24,
-    paddingVertical: 14,
-    borderRadius: 24,
-    borderWidth: 2,
-    borderColor: Colors.primary,
-  },
-  galleryButtonText: {
-    color: Colors.primary,
-    fontSize: 16,
-    fontWeight: '600' as const,
   },
 });

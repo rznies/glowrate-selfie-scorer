@@ -1,12 +1,10 @@
 import React from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
@@ -20,8 +18,12 @@ import {
   Sparkles,
 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import Colors from '@/constants/colors';
+
 import { useGlow } from '@/contexts/GlowContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { Screen } from '@/components/ui/Screen';
+import { Text } from '@/components/ui/Typography';
+import { Card } from '@/components/ui/Card';
 
 const FEATURES = [
   { icon: Infinity, title: 'Unlimited Scans', description: 'No daily limits ever' },
@@ -33,6 +35,7 @@ const FEATURES = [
 export default function PremiumScreen() {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
   const { upgradeToPremium, profile } = useGlow();
 
   const handleClose = () => {
@@ -47,330 +50,213 @@ export default function PremiumScreen() {
 
   if (profile.isPremium) {
     return (
-      <View style={[styles.container, { paddingTop: insets.top }]}>
-        <LinearGradient
-          colors={[Colors.background, '#1a1a2e', Colors.background]}
-          style={StyleSheet.absoluteFill}
-        />
+      <Screen>
         <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-          <X color={Colors.text} size={24} />
+          <X color={theme.colors.textPrimary} size={24} />
         </TouchableOpacity>
         <View style={styles.alreadyPremium}>
-          <Crown color={Colors.accent} size={64} />
-          <Text style={styles.alreadyTitle}>You are Premium! 👑</Text>
-          <Text style={styles.alreadySubtitle}>
+          <Crown color={theme.colors.accent} size={64} />
+          <Text variant="h1" weight="bold" style={{ marginTop: 24, marginBottom: 12 }}>
+            You are Premium! 👑
+          </Text>
+          <Text variant="body" color={theme.colors.textSecondary} align="center">
             Enjoy unlimited scans and all premium features
           </Text>
         </View>
-      </View>
+      </Screen>
     );
   }
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <LinearGradient
-        colors={[Colors.background, '#1a1a2e', '#0f0f1a']}
-        style={StyleSheet.absoluteFill}
-      />
-
-      <TouchableOpacity style={styles.closeButton} onPress={handleClose}>
-        <X color={Colors.text} size={24} />
+    <Screen safeArea={false}>
+      <TouchableOpacity 
+        style={[styles.closeButton, { top: insets.top + 16 }]} 
+        onPress={handleClose}
+      >
+        <X color={theme.colors.textPrimary} size={24} />
       </TouchableOpacity>
 
       <ScrollView 
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={[styles.scrollContent, { paddingBottom: insets.bottom + 32 }]}
+        contentContainerStyle={[
+          styles.scrollContent, 
+          { paddingTop: insets.top + 60, paddingBottom: insets.bottom + 32 }
+        ]}
       >
         <View style={styles.header}>
-          <View style={styles.crownContainer}>
-            <LinearGradient
-              colors={[...Colors.gradient.gold]}
-              style={styles.crownGradient}
-            >
-              <Crown color="#000" size={48} />
-            </LinearGradient>
+          <View style={[styles.crownBadge, { backgroundColor: theme.colors.surfaceHighlight }]}>
+            <Crown color={theme.colors.accent} size={48} />
           </View>
-          <Text style={styles.title}>GlowRate Pro</Text>
-          <Text style={styles.subtitle}>
+          <Text variant="h1" weight="bold" align="center" style={{ marginBottom: 8 }}>
+            GlowRate Pro
+          </Text>
+          <Text variant="body" color={theme.colors.textSecondary} align="center">
             Unlock your full glow potential ✨
           </Text>
         </View>
 
         <View style={styles.features}>
           {FEATURES.map((feature, index) => (
-            <View key={index} style={styles.featureCard}>
-              <View style={styles.featureIcon}>
-                <feature.icon color={Colors.accent} size={24} />
+            <Card key={index} style={styles.featureCard} padding="m" variant="outlined">
+              <View style={[styles.featureIcon, { backgroundColor: theme.colors.surfaceHighlight }]}>
+                <feature.icon color={theme.colors.primary} size={24} />
               </View>
               <View style={styles.featureContent}>
-                <Text style={styles.featureTitle}>{feature.title}</Text>
-                <Text style={styles.featureDescription}>{feature.description}</Text>
+                <Text variant="body" weight="bold">{feature.title}</Text>
+                <Text variant="caption" color={theme.colors.textSecondary}>
+                  {feature.description}
+                </Text>
               </View>
-              <Check color={Colors.success} size={20} />
-            </View>
+              <Check color={theme.colors.success} size={20} />
+            </Card>
           ))}
         </View>
 
         <View style={styles.plans}>
           <TouchableOpacity 
-            style={styles.planCard}
             onPress={() => handlePurchase('monthly')}
             activeOpacity={0.9}
           >
-            <LinearGradient
-              colors={['rgba(168, 85, 247, 0.2)', 'rgba(255, 107, 157, 0.2)']}
-              style={styles.planGradient}
-            >
+            <Card style={styles.planCard} padding="l" variant="elevated">
               <View style={styles.planHeader}>
-                <Text style={styles.planName}>Monthly</Text>
+                <Text variant="h3" weight="semibold">Monthly</Text>
                 <View style={styles.priceRow}>
-                  <Text style={styles.currency}>$</Text>
-                  <Text style={styles.price}>7.99</Text>
-                  <Text style={styles.period}>/mo</Text>
+                  <Text variant="h2" weight="bold">$7.99</Text>
+                  <Text variant="body" color={theme.colors.textSecondary}>/mo</Text>
                 </View>
               </View>
-              <Text style={styles.planDescription}>
+              <Text variant="caption" color={theme.colors.textSecondary}>
                 Cancel anytime. Billed monthly.
               </Text>
-            </LinearGradient>
+            </Card>
           </TouchableOpacity>
 
           <TouchableOpacity 
-            style={[styles.planCard, styles.bestValue]}
             onPress={() => handlePurchase('lifetime')}
             activeOpacity={0.9}
           >
-            <View style={styles.bestBadge}>
+            <View style={[styles.bestBadge, { backgroundColor: theme.colors.accent }]}>
               <Sparkles color="#000" size={12} />
-              <Text style={styles.bestText}>BEST VALUE</Text>
+              <Text variant="label" weight="bold" color="#000" style={{ fontSize: 10 }}>
+                BEST VALUE
+              </Text>
             </View>
-            <LinearGradient
-              colors={[...Colors.gradient.gold]}
-              style={styles.planGradient}
+            <Card 
+              style={[styles.planCard, { borderColor: theme.colors.accent, borderWidth: 2 }]} 
+              padding="l"
             >
               <View style={styles.planHeader}>
-                <Text style={[styles.planName, styles.darkText]}>Lifetime</Text>
+                <Text variant="h3" weight="semibold">Lifetime</Text>
                 <View style={styles.priceRow}>
-                  <Text style={[styles.currency, styles.darkText]}>$</Text>
-                  <Text style={[styles.price, styles.darkText]}>29.99</Text>
-                  <Text style={[styles.period, styles.darkText]}>once</Text>
+                  <Text variant="h2" weight="bold">$29.99</Text>
+                  <Text variant="body" color={theme.colors.textSecondary}>once</Text>
                 </View>
               </View>
-              <Text style={[styles.planDescription, styles.darkText]}>
+              <Text variant="caption" color={theme.colors.textSecondary}>
                 One-time payment. Yours forever!
               </Text>
-            </LinearGradient>
+            </Card>
           </TouchableOpacity>
         </View>
 
-        <View style={styles.guarantee}>
-          <Text style={styles.guaranteeTitle}>💯 Satisfaction Guaranteed</Text>
-          <Text style={styles.guaranteeText}>
+        <Card style={styles.guarantee} padding="m">
+          <Text variant="body" weight="bold" align="center" style={{ marginBottom: 4 }}>
+            💯 Satisfaction Guaranteed
+          </Text>
+          <Text variant="caption" color={theme.colors.textSecondary} align="center">
             Not happy? Contact us within 7 days for a full refund.
           </Text>
-        </View>
+        </Card>
 
-        <Text style={styles.legal}>
+        <Text variant="caption" color={theme.colors.textTertiary} align="center" style={{ marginTop: 16 }}>
           Payment will be charged to your account. Subscription automatically
           renews unless cancelled 24 hours before the end of the current period.
         </Text>
       </ScrollView>
-    </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
   closeButton: {
     position: 'absolute',
-    top: 60,
     right: 20,
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: Colors.card,
-    justifyContent: 'center',
-    alignItems: 'center',
     zIndex: 10,
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0,0,0,0.5)',
   },
   scrollContent: {
     paddingHorizontal: 24,
-    paddingTop: 60,
   },
   header: {
     alignItems: 'center',
     marginBottom: 32,
   },
-  crownContainer: {
-    marginBottom: 20,
-  },
-  crownGradient: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
+  crownBadge: {
+    width: 80,
+    height: 80,
+    borderRadius: 40,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  title: {
-    fontSize: 36,
-    fontWeight: '800' as const,
-    color: Colors.text,
-    marginBottom: 8,
-  },
-  subtitle: {
-    fontSize: 18,
-    color: Colors.textSecondary,
+    marginBottom: 20,
   },
   features: {
+    gap: 12,
     marginBottom: 32,
   },
   featureCard: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: Colors.border,
   },
   featureIcon: {
     width: 48,
     height: 48,
     borderRadius: 12,
-    backgroundColor: Colors.cardLight,
     justifyContent: 'center',
     alignItems: 'center',
+    marginRight: 16,
   },
   featureContent: {
     flex: 1,
-    marginLeft: 16,
-  },
-  featureTitle: {
-    fontSize: 16,
-    fontWeight: '700' as const,
-    color: Colors.text,
-  },
-  featureDescription: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    marginTop: 2,
   },
   plans: {
-    gap: 16,
+    gap: 20,
     marginBottom: 24,
   },
   planCard: {
     borderRadius: 20,
-    overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: Colors.border,
   },
-  bestValue: {
-    borderColor: Colors.accent,
+  planHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 4,
   },
   bestBadge: {
     position: 'absolute',
-    top: -1,
+    top: -12,
     right: 20,
-    backgroundColor: Colors.accent,
     paddingHorizontal: 12,
     paddingVertical: 6,
-    borderBottomLeftRadius: 8,
-    borderBottomRightRadius: 8,
+    borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     zIndex: 10,
   },
-  bestText: {
-    fontSize: 10,
-    fontWeight: '800' as const,
-    color: '#000',
-  },
-  planGradient: {
-    padding: 24,
-  },
-  planHeader: {
-    marginBottom: 8,
-  },
-  planName: {
-    fontSize: 18,
-    fontWeight: '600' as const,
-    color: Colors.text,
-    marginBottom: 4,
-  },
-  priceRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  currency: {
-    fontSize: 24,
-    fontWeight: '600' as const,
-    color: Colors.text,
-  },
-  price: {
-    fontSize: 48,
-    fontWeight: '800' as const,
-    color: Colors.text,
-  },
-  period: {
-    fontSize: 18,
-    color: Colors.textSecondary,
-    marginLeft: 4,
-  },
-  planDescription: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-  },
-  darkText: {
-    color: '#000',
-  },
   guarantee: {
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 20,
-    alignItems: 'center',
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  guaranteeTitle: {
-    fontSize: 16,
-    fontWeight: '700' as const,
-    color: Colors.text,
-    marginBottom: 8,
-  },
-  guaranteeText: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    textAlign: 'center',
-  },
-  legal: {
-    fontSize: 12,
-    color: Colors.textMuted,
-    textAlign: 'center',
-    lineHeight: 18,
+    marginTop: 8,
   },
   alreadyPremium: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 32,
-  },
-  alreadyTitle: {
-    fontSize: 28,
-    fontWeight: '800' as const,
-    color: Colors.text,
-    marginTop: 24,
-    marginBottom: 12,
-  },
-  alreadySubtitle: {
-    fontSize: 16,
-    color: Colors.textSecondary,
-    textAlign: 'center',
   },
 });

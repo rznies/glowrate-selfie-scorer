@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import {
   View,
-  Text,
   StyleSheet,
   Animated,
   Dimensions,
@@ -10,8 +9,12 @@ import {
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import Colors from '@/constants/colors';
+
 import { useGlow } from '@/contexts/GlowContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { Screen } from '@/components/ui/Screen';
+import { Text } from '@/components/ui/Typography';
+import { Card } from '@/components/ui/Card';
 
 const { width } = Dimensions.get('window');
 
@@ -25,6 +28,7 @@ const LOADING_MESSAGES = [
 
 export default function ProcessingScreen() {
   const router = useRouter();
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const { imageUri } = useLocalSearchParams<{ imageUri: string }>();
   const { processSelfie } = useGlow();
@@ -65,11 +69,14 @@ export default function ProcessingScreen() {
     }).start();
 
     const messageInterval = setInterval(() => {
-      messageIndex.setValue((messageIndex as any)._value + 1);
-    }, 500);
+      // @ts-ignore
+      messageIndex.setValue(messageIndex._value + 1);
+    }, 800);
 
     const processImage = async () => {
       if (imageUri) {
+        // Simulate waiting for animation
+        await new Promise(resolve => setTimeout(resolve, 2000));
         await processSelfie(imageUri);
         router.replace('/results');
       }
@@ -92,16 +99,12 @@ export default function ProcessingScreen() {
     outputRange: ['0%', '100%'],
   });
 
-  const currentMessageIndex = Math.floor((messageIndex as any)._value || 0) % LOADING_MESSAGES.length;
+  // @ts-ignore
+  const currentMessageIndex = Math.floor(messageIndex._value || 0) % LOADING_MESSAGES.length;
 
   return (
-    <View style={[styles.container, { paddingTop: insets.top }]}>
-      <LinearGradient
-        colors={[Colors.background, '#1a1a2e', '#0a0a14']}
-        style={StyleSheet.absoluteFill}
-      />
-
-      <View style={styles.content}>
+    <Screen safeArea={false}>
+      <View style={[styles.content, { paddingTop: insets.top }]}>
         <View style={styles.imageContainer}>
           <Animated.View
             style={[
@@ -112,14 +115,17 @@ export default function ProcessingScreen() {
             ]}
           >
             <LinearGradient
-              colors={[...Colors.gradient.primary, ...Colors.gradient.secondary]}
+              colors={[theme.colors.primary, theme.colors.secondary]}
               style={styles.gradientRing}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
             />
           </Animated.View>
           {imageUri && (
-            <Image source={{ uri: imageUri }} style={styles.previewImage} />
+            <Image 
+              source={{ uri: imageUri }} 
+              style={[styles.previewImage, { borderColor: theme.colors.surface }]} 
+            />
           )}
         </View>
 
@@ -127,40 +133,35 @@ export default function ProcessingScreen() {
           <Text style={styles.sparkle}>✨</Text>
         </Animated.View>
 
-        <Text style={styles.title}>AI Magic in Progress</Text>
-        <Text style={styles.message}>
-          {LOADING_MESSAGES[currentMessageIndex]}
-        </Text>
+        <View style={styles.textContainer}>
+          <Text variant="h2" weight="bold" align="center" style={{ marginBottom: 12 }}>
+            AI Magic in Progress
+          </Text>
+          <Text variant="body" color={theme.colors.textSecondary} align="center" style={{ minHeight: 28 }}>
+            {LOADING_MESSAGES[currentMessageIndex]}
+          </Text>
+        </View>
 
         <View style={styles.progressContainer}>
-          <View style={styles.progressTrack}>
-            <Animated.View style={[styles.progressFill, { width: progressWidth }]}>
-              <LinearGradient
-                colors={[...Colors.gradient.primary]}
-                style={StyleSheet.absoluteFill}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 0 }}
-              />
-            </Animated.View>
+          <View style={[styles.progressTrack, { backgroundColor: theme.colors.surfaceHighlight }]}>
+            <Animated.View style={[styles.progressFill, { width: progressWidth, backgroundColor: theme.colors.primary }]} />
           </View>
         </View>
 
-        <View style={styles.funFacts}>
-          <Text style={styles.funFactTitle}>Did you know? 💡</Text>
-          <Text style={styles.funFactText}>
+        <Card style={styles.funFacts} padding="l" variant="elevated">
+          <Text variant="body" weight="bold" style={{ marginBottom: 8 }}>
+            Did you know? 💡
+          </Text>
+          <Text variant="body" color={theme.colors.textSecondary} style={{ lineHeight: 22 }}>
             Smiling in photos can increase your perceived attractiveness by up to 40%!
           </Text>
-        </View>
+        </Card>
       </View>
-    </View>
+    </Screen>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
   content: {
     flex: 1,
     justifyContent: 'center',
@@ -172,7 +173,7 @@ const styles = StyleSheet.create({
     height: width * 0.5,
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 48,
   },
   glowRing: {
     position: 'absolute',
@@ -191,7 +192,6 @@ const styles = StyleSheet.create({
     height: width * 0.45,
     borderRadius: width * 0.225,
     borderWidth: 4,
-    borderColor: Colors.card,
   },
   sparkleContainer: {
     position: 'absolute',
@@ -200,53 +200,25 @@ const styles = StyleSheet.create({
   sparkle: {
     fontSize: 48,
   },
-  title: {
-    fontSize: 28,
-    fontWeight: '800' as const,
-    color: Colors.text,
-    textAlign: 'center',
-    marginBottom: 12,
-  },
-  message: {
-    fontSize: 18,
-    color: Colors.textSecondary,
-    textAlign: 'center',
+  textContainer: {
     marginBottom: 40,
-    minHeight: 28,
+    alignItems: 'center',
+    width: '100%',
   },
   progressContainer: {
     width: '100%',
-    paddingHorizontal: 20,
     marginBottom: 48,
   },
   progressTrack: {
-    height: 8,
-    backgroundColor: Colors.card,
-    borderRadius: 4,
+    height: 6,
+    borderRadius: 3,
     overflow: 'hidden',
   },
   progressFill: {
     height: '100%',
-    borderRadius: 4,
-    overflow: 'hidden',
+    borderRadius: 3,
   },
   funFacts: {
-    backgroundColor: Colors.card,
-    borderRadius: 20,
-    padding: 24,
     width: '100%',
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  funFactTitle: {
-    fontSize: 16,
-    fontWeight: '700' as const,
-    color: Colors.text,
-    marginBottom: 8,
-  },
-  funFactText: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    lineHeight: 22,
   },
 });
