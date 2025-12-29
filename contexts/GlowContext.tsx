@@ -3,7 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useCallback, useMemo } from 'react';
 import { ScanResult, UserProfile } from '@/types';
-import { generateMockScore, getRandomTips, getRandomRoast } from '@/mocks/glowData';
+import { trpc } from '@/lib/trpc';
 
 const STORAGE_KEYS = {
   SCAN_HISTORY: 'glow_scan_history',
@@ -89,41 +89,39 @@ export const [GlowProvider, useGlow] = createContextHook(() => {
   const { mutate: saveScan } = saveScanMutation;
   const { mutate: updateProfile } = updateProfileMutation;
 
+  const processSelfieMutation = trpc.glow.processSelfie.useMutation();
+
   const processSelfie = useCallback(async (imageUri: string): Promise<ScanResult> => {
     setIsProcessing(true);
     
-    await new Promise(resolve => setTimeout(resolve, 2500));
-    
-    const { score, breakdown } = generateMockScore();
-    const tips = getRandomTips(3);
-    const roast = getRandomRoast();
-    
-    const scan: ScanResult = {
-      id: Date.now().toString(),
-      imageUri,
-      score,
-      breakdown,
-      tips,
-      roast,
-      createdAt: new Date().toISOString(),
-    };
-    
-    setCurrentScan(scan);
-    saveScan(scan);
-    
-    const newTotalScans = profile.totalScans + 1;
-    const newAverage = ((profile.averageScore * profile.totalScans) + score) / newTotalScans;
-    
-    updateProfile({
-      dailyScansUsed: profile.dailyScansUsed + 1,
-      lastScanDate: new Date().toDateString(),
-      totalScans: newTotalScans,
-      averageScore: Math.round(newAverage * 10) / 10,
-    });
-    
-    setIsProcessing(false);
-    return scan;
-  }, [profile, saveScan, updateProfile]);
+    try {
+      const result = await processSelfieMutation.mutateAsync({ imageUri });
+      
+      const scan: ScanResult = {
+        ...result,
+        imageUri,
+        // Ensure tips match the expected type if needed, though structure should be compatible
+        tips: result.tips as ScanResult['tips'], 
+      };
+      
+      setCurrentScan(scan);
+      saveScan(scan);
+      
+      const newTotalScans = profile.totalScans + 1;
+      const newAverage = ((profile.averageScore * profile.totalScans) + scan.score) / newTotalScans;
+      
+      updateProfile({
+        dailyScansUsed: profile.dailyScansUsed + 1,
+        lastScanDate: new Date().toDateString(),
+        totalScans: newTotalScans,
+        averageScore: Math.round(newAverage * 10) / 10,
+      });
+      
+      return scan;
+    } finally {
+      setIsProcessing(false);
+    }
+  }, [profile, saveScan, updateProfile, processSelfieMutation]);
 
   const upgradeToPremium = useCallback(() => {
     updateProfile({ isPremium: true });
