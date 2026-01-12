@@ -1,12 +1,14 @@
 {
-  "name": "expo-app",
+  "name": "glowrate-selfie-scorer",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
     "start": "bunx rork start -p 3q6f3uwks57qzm5ouiwf2 --tunnel",
     "start-web": "bunx rork start -p 3q6f3uwks57qzm5ouiwf2 --web --tunnel",
     "start-web-dev": "DEBUG=expo* bunx rork start -p 3q6f3uwks57qzm5ouiwf2 --web --tunnel",
-    "lint": "expo lint"
+    "lint": "expo lint",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm run lint"
   },
   "dependencies": {
     "@expo/vector-icons": "^15.0.3",
@@ -24,6 +26,7 @@
     "expo-blur": "~15.0.8",
     "expo-camera": "~17.0.10",
     "expo-constants": "~18.0.11",
+    "expo-file-system": "^19.0.21",
     "expo-font": "~14.0.10",
     "expo-haptics": "~15.0.8",
     "expo-image": "~3.0.11",
