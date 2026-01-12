@@ -22,6 +22,7 @@ import {
 import * as Haptics from 'expo-haptics';
 
 import { useGlow } from '@/contexts/GlowContext';
+import { showError } from '@/lib/toast';
 import { useTheme } from '@/contexts/ThemeContext';
 import { Screen } from '@/components/ui/Screen';
 import { Text } from '@/components/ui/Typography';
@@ -81,7 +82,7 @@ export default function ResultsScreen() {
         message: `I just got a ${currentScan?.score}/10 on GlowRate! 🔥 ${currentScan?.roast}`,
       });
     } catch (error) {
-      console.log('Error sharing:', error);
+      showError('Share Failed', 'Unable to share your result. Please try again.');
     }
   };
 
