@@ -54,6 +54,8 @@ export default function ProfileScreen() {
     },
   };
 
+  const styles = createStyles(Colors);
+
   const handleUpgradePress = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     router.push('/premium');
@@ -193,209 +195,211 @@ export default function ProfileScreen() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: Colors.background,
-  },
-  header: {
-    paddingHorizontal: 24,
-    paddingVertical: 16,
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: '800' as const,
-    color: Colors.text,
-  },
-  profileCard: {
-    alignItems: 'center',
-    paddingVertical: 24,
-  },
-  avatarContainer: {
-    position: 'relative',
-  },
-  avatar: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  avatarText: {
-    fontSize: 48,
-  },
-  crownBadge: {
-    position: 'absolute',
-    top: -4,
-    right: -4,
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 6,
-    borderWidth: 2,
-    borderColor: Colors.accent,
-  },
-  username: {
-    fontSize: 24,
-    fontWeight: '700' as const,
-    color: Colors.text,
-    marginTop: 16,
-  },
-  memberStatus: {
-    fontSize: 14,
-    color: Colors.textSecondary,
-    marginTop: 4,
-  },
-  upgradeCard: {
-    marginHorizontal: 16,
-    borderRadius: 20,
-    overflow: 'hidden',
-    marginBottom: 24,
-  },
-  upgradeGradient: {
-    padding: 20,
-  },
-  upgradeContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  upgradeHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-  upgradeTextContainer: {
-    flex: 1,
-  },
-  upgradeTitle: {
-    fontSize: 18,
-    fontWeight: '800' as const,
-    color: '#000',
-  },
-  upgradeSubtitle: {
-    fontSize: 13,
-    color: 'rgba(0,0,0,0.7)',
-    marginTop: 2,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: 12,
-    gap: 12,
-    marginBottom: 24,
-  },
-  statCard: {
-    width: '47%',
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 16,
-    alignItems: 'center',
-    gap: 8,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  statValue: {
-    fontSize: 28,
-    fontWeight: '700' as const,
-    color: Colors.text,
-  },
-  statLabel: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-  },
-  dailyScansCard: {
-    marginHorizontal: 16,
-    backgroundColor: Colors.card,
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  dailyHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 16,
-  },
-  dailyTitle: {
-    fontSize: 16,
-    fontWeight: '600' as const,
-    color: Colors.text,
-  },
-  progressContainer: {
-    gap: 8,
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: Colors.cardLight,
-    borderRadius: 4,
-    overflow: 'hidden',
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: Colors.primary,
-    borderRadius: 4,
-  },
-  progressText: {
-    fontSize: 13,
-    color: Colors.textSecondary,
-    textAlign: 'right',
-  },
-  menuSection: {
-    paddingHorizontal: 16,
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 18,
-    fontWeight: '700' as const,
-    color: Colors.text,
-    marginBottom: 12,
-  },
-  menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: Colors.card,
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 8,
-    borderWidth: 1,
-    borderColor: Colors.border,
-  },
-  menuIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: Colors.cardLight,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  menuContent: {
-    flex: 1,
-    marginLeft: 12,
-  },
-  menuLabel: {
-    fontSize: 15,
-    fontWeight: '600' as const,
-    color: Colors.text,
-  },
-  menuSubtitle: {
-    fontSize: 13,
-    color: Colors.textMuted,
-    marginTop: 2,
-  },
-  footer: {
-    alignItems: 'center',
-    paddingVertical: 32,
-    paddingBottom: 100,
-  },
-  footerText: {
-    fontSize: 13,
-    color: Colors.textMuted,
-  },
-  footerSubtext: {
-    fontSize: 12,
-    color: Colors.textMuted,
-    marginTop: 4,
-  },
-});
+function createStyles(Colors: any) {
+  return StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: Colors.background,
+    },
+    header: {
+      paddingHorizontal: 24,
+      paddingVertical: 16,
+    },
+    title: {
+      fontSize: 32,
+      fontWeight: '800' as const,
+      color: Colors.text,
+    },
+    profileCard: {
+      alignItems: 'center',
+      paddingVertical: 24,
+    },
+    avatarContainer: {
+      position: 'relative',
+    },
+    avatar: {
+      width: 100,
+      height: 100,
+      borderRadius: 50,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    avatarText: {
+      fontSize: 48,
+    },
+    crownBadge: {
+      position: 'absolute',
+      top: -4,
+      right: -4,
+      backgroundColor: Colors.card,
+      borderRadius: 16,
+      padding: 6,
+      borderWidth: 2,
+      borderColor: Colors.accent,
+    },
+    username: {
+      fontSize: 24,
+      fontWeight: '700' as const,
+      color: Colors.text,
+      marginTop: 16,
+    },
+    memberStatus: {
+      fontSize: 14,
+      color: Colors.textSecondary,
+      marginTop: 4,
+    },
+    upgradeCard: {
+      marginHorizontal: 16,
+      borderRadius: 20,
+      overflow: 'hidden',
+      marginBottom: 24,
+    },
+    upgradeGradient: {
+      padding: 20,
+    },
+    upgradeContent: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    upgradeHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 12,
+    },
+    upgradeTextContainer: {
+      flex: 1,
+    },
+    upgradeTitle: {
+      fontSize: 18,
+      fontWeight: '800' as const,
+      color: '#000',
+    },
+    upgradeSubtitle: {
+      fontSize: 13,
+      color: 'rgba(0,0,0,0.7)',
+      marginTop: 2,
+    },
+    statsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      paddingHorizontal: 12,
+      gap: 12,
+      marginBottom: 24,
+    },
+    statCard: {
+      width: '47%',
+      backgroundColor: Colors.card,
+      borderRadius: 16,
+      padding: 16,
+      alignItems: 'center',
+      gap: 8,
+      borderWidth: 1,
+      borderColor: Colors.border,
+    },
+    statValue: {
+      fontSize: 28,
+      fontWeight: '700' as const,
+      color: Colors.text,
+    },
+    statLabel: {
+      fontSize: 13,
+      color: Colors.textSecondary,
+    },
+    dailyScansCard: {
+      marginHorizontal: 16,
+      backgroundColor: Colors.card,
+      borderRadius: 16,
+      padding: 20,
+      marginBottom: 24,
+      borderWidth: 1,
+      borderColor: Colors.border,
+    },
+    dailyHeader: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 8,
+      marginBottom: 16,
+    },
+    dailyTitle: {
+      fontSize: 16,
+      fontWeight: '600' as const,
+      color: Colors.text,
+    },
+    progressContainer: {
+      gap: 8,
+    },
+    progressBar: {
+      height: 8,
+      backgroundColor: Colors.cardLight,
+      borderRadius: 4,
+      overflow: 'hidden',
+    },
+    progressFill: {
+      height: '100%',
+      backgroundColor: Colors.primary,
+      borderRadius: 4,
+    },
+    progressText: {
+      fontSize: 13,
+      color: Colors.textSecondary,
+      textAlign: 'right',
+    },
+    menuSection: {
+      paddingHorizontal: 16,
+      marginBottom: 24,
+    },
+    sectionTitle: {
+      fontSize: 18,
+      fontWeight: '700' as const,
+      color: Colors.text,
+      marginBottom: 12,
+    },
+    menuItem: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      backgroundColor: Colors.card,
+      padding: 16,
+      borderRadius: 12,
+      marginBottom: 8,
+      borderWidth: 1,
+      borderColor: Colors.border,
+    },
+    menuIconContainer: {
+      width: 40,
+      height: 40,
+      borderRadius: 12,
+      backgroundColor: Colors.cardLight,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    menuContent: {
+      flex: 1,
+      marginLeft: 12,
+    },
+    menuLabel: {
+      fontSize: 15,
+      fontWeight: '600' as const,
+      color: Colors.text,
+    },
+    menuSubtitle: {
+      fontSize: 13,
+      color: Colors.textMuted,
+      marginTop: 2,
+    },
+    footer: {
+      alignItems: 'center',
+      paddingVertical: 32,
+      paddingBottom: 100,
+    },
+    footerText: {
+      fontSize: 13,
+      color: Colors.textMuted,
+    },
+    footerSubtext: {
+      fontSize: 12,
+      color: Colors.textMuted,
+      marginTop: 4,
+    },
+  });
+}
