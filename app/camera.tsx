@@ -98,7 +98,12 @@ export default function CameraScreen() {
   if (!permission.granted) {
     return (
       <Screen style={{ padding: 24 }}>
-        <TouchableOpacity style={styles.closeButtonTop} onPress={handleClose}>
+        <TouchableOpacity 
+          style={styles.closeButtonTop} 
+          onPress={handleClose}
+          accessibilityRole="button"
+          accessibilityLabel="Close camera"
+        >
           <X color={theme.colors.textPrimary} size={28} />
         </TouchableOpacity>
         
@@ -136,7 +141,12 @@ export default function CameraScreen() {
         
         <View style={[styles.overlay, { paddingTop: insets.top, paddingBottom: insets.bottom + 20 }]}>
           <View style={styles.header}>
-            <TouchableOpacity style={styles.pillButton} onPress={handleRetake}>
+            <TouchableOpacity 
+              style={styles.pillButton} 
+              onPress={handleRetake}
+              accessibilityRole="button"
+              accessibilityLabel="Retake photo"
+            >
               <RotateCcw color={theme.colors.textPrimary} size={20} />
               <Text weight="semibold" style={{ marginLeft: 8 }}>Retake</Text>
             </TouchableOpacity>
@@ -182,7 +192,12 @@ export default function CameraScreen() {
 
       <View style={[styles.overlay, { paddingTop: insets.top, paddingBottom: insets.bottom + 20 }]}>
         <View style={styles.header}>
-          <TouchableOpacity style={styles.circleButton} onPress={handleClose}>
+          <TouchableOpacity 
+            style={styles.circleButton} 
+            onPress={handleClose}
+            accessibilityRole="button"
+            accessibilityLabel="Close camera"
+          >
             <X color={theme.colors.textPrimary} size={24} />
           </TouchableOpacity>
           <View style={styles.circleButton}>
@@ -200,15 +215,30 @@ export default function CameraScreen() {
 
         {/* Controls */}
         <View style={styles.controls}>
-          <TouchableOpacity style={styles.sideControl} onPress={handlePickImage}>
+          <TouchableOpacity 
+            style={styles.sideControl} 
+            onPress={handlePickImage}
+            accessibilityRole="button"
+            accessibilityLabel="Choose from gallery"
+          >
             <ImageIcon color={theme.colors.textPrimary} size={28} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.captureButton, { borderColor: theme.colors.primary }]} onPress={handleCapture}>
+          <TouchableOpacity 
+            style={[styles.captureButton, { borderColor: theme.colors.primary }]} 
+            onPress={handleCapture}
+            accessibilityRole="button"
+            accessibilityLabel="Take photo"
+          >
             <View style={styles.captureInner} />
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.sideControl} onPress={toggleCameraFacing}>
+          <TouchableOpacity 
+            style={styles.sideControl} 
+            onPress={toggleCameraFacing}
+            accessibilityRole="button"
+            accessibilityLabel="Switch camera"
+          >
             <RotateCcw color={theme.colors.textPrimary} size={28} />
           </TouchableOpacity>
         </View>
