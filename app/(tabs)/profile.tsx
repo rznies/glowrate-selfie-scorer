@@ -22,13 +22,37 @@ import {
   HelpCircle,
 } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
-import Colors from '@/constants/colors';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useGlow } from '@/contexts/GlowContext';
 
 export default function ProfileScreen() {
   const insets = useSafeAreaInsets();
   const router = useRouter();
   const { profile } = useGlow();
+  const theme = useTheme();
+
+  // Create local Colors mapping for compatibility
+  const Colors = {
+    primary: theme.colors.primary,
+    secondary: theme.colors.secondary,
+    accent: theme.colors.accent,
+    background: theme.colors.background,
+    card: theme.colors.surface,
+    cardLight: theme.colors.surfaceHighlight,
+    text: theme.colors.textPrimary,
+    textSecondary: theme.colors.textSecondary,
+    textMuted: theme.colors.textTertiary,
+    border: theme.colors.border,
+    success: theme.colors.success,
+    warning: theme.colors.warning,
+    error: theme.colors.error,
+    gradient: {
+      primary: [theme.colors.primary, theme.colors.secondary] as const,
+      secondary: [theme.colors.secondary, theme.colors.primary] as const,
+      gold: [theme.colors.accent, theme.colors.warning] as const,
+      fire: [theme.colors.error, theme.colors.warning, theme.colors.accent] as const,
+    },
+  };
 
   const handleUpgradePress = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
