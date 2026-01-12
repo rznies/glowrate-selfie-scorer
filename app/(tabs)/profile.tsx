@@ -186,7 +186,7 @@ export default function ProfileScreen() {
 
         <View style={styles.footer}>
           <Text style={styles.footerText}>GlowRate v1.0.0</Text>
-          <Text style={styles.footerSubtext}>Made with ✨ for your glow</Text>
+          <Text style={styles.footerSubtext}>Master your glow, one selfie at a time</Text>
         </View>
       </ScrollView>
     </View>

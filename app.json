@@ -3,6 +3,7 @@
     "name": "GlowRate Selfie Scorer",
     "slug": "glowrate-selfie-scorer",
     "version": "1.0.0",
+    "description": "Sophisticated AI-powered selfie scoring and analysis app.",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "rork-app",
