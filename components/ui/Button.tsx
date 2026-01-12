@@ -3,7 +3,8 @@ import {
   TouchableOpacity, 
   ActivityIndicator, 
   TouchableOpacityProps, 
-  ViewStyle 
+  ViewStyle,
+  GestureResponderEvent,
 } from 'react-native';
 import * as Haptics from 'expo-haptics';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -32,7 +33,7 @@ export function Button({
 }: ButtonProps) {
   const theme = useTheme();
 
-  const handlePress = (e: any) => {
+  const handlePress = (e: GestureResponderEvent) => {
     if (loading || disabled) return;
     Haptics.selectionAsync();
     onPress?.(e);
