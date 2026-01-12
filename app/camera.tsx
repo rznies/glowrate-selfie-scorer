@@ -6,6 +6,7 @@ import {
   Platform,
   Image,
 } from 'react-native';
+import { showError } from '@/lib/toast';
 import { CameraView, CameraType, useCameraPermissions } from 'expo-camera';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
@@ -49,7 +50,7 @@ export default function CameraScreen() {
           setCapturedImage(photo.uri);
         }
       } catch (error) {
-        console.log('Error taking picture:', error);
+        showError('Camera Error', 'Failed to take picture. Please try again.');
       }
     }
   };
