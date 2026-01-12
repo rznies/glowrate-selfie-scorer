@@ -145,6 +145,15 @@ export default function HomeScreen() {
               </Text>
             </View>
           )}
+
+          <Text 
+            variant="caption" 
+            color={theme.colors.textTertiary} 
+            align="center"
+            style={{ marginTop: theme.spacing.m, paddingHorizontal: theme.spacing.xl }}
+          >
+            For entertainment purposes only. Results are AI-generated.
+          </Text>
         </View>
 
         {/* Challenges Section */}
