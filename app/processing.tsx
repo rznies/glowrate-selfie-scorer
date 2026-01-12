@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -36,7 +36,7 @@ export default function ProcessingScreen() {
   const spinAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
-  const messageIndex = useRef(new Animated.Value(0)).current;
+  const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
 
   useEffect(() => {
     Animated.loop(
@@ -69,8 +69,7 @@ export default function ProcessingScreen() {
     }).start();
 
     const messageInterval = setInterval(() => {
-      // @ts-ignore
-      messageIndex.setValue(messageIndex._value + 1);
+      setCurrentMessageIndex(prev => (prev + 1) % LOADING_MESSAGES.length);
     }, 800);
 
     const processImage = async () => {
@@ -87,7 +86,7 @@ export default function ProcessingScreen() {
     return () => {
       clearInterval(messageInterval);
     };
-  }, [imageUri, processSelfie, router, spinAnim, pulseAnim, progressAnim, messageIndex]);
+  }, [imageUri, processSelfie, router, spinAnim, pulseAnim, progressAnim]);
 
   const spin = spinAnim.interpolate({
     inputRange: [0, 1],
@@ -98,9 +97,6 @@ export default function ProcessingScreen() {
     inputRange: [0, 1],
     outputRange: ['0%', '100%'],
   });
-
-  // @ts-ignore
-  const currentMessageIndex = Math.floor(messageIndex._value || 0) % LOADING_MESSAGES.length;
 
   return (
     <Screen safeArea={false}>
