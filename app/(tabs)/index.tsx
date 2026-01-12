@@ -7,7 +7,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import { Camera, Sparkles, Zap, Crown, Trophy, TrendingUp, History } from 'lucide-react-native';
+import { Camera, Sparkles, Zap, Crown, Trophy, TrendingUp, History, LucideIcon } from 'lucide-react-native';
 import * as Haptics from 'expo-haptics';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -35,7 +35,7 @@ export default function HomeScreen() {
     }
   };
 
-  const StatItem = ({ label, value, icon: Icon }: { label: string; value: string | number; icon: any }) => (
+  const StatItem = ({ label, value, icon: Icon }: { label: string; value: string | number; icon: LucideIcon }) => (
     <View style={styles.statItem}>
       <View style={[styles.statIconContainer, { backgroundColor: theme.colors.surfaceHighlight }]}>
         <Icon size={16} color={theme.colors.primary} />
