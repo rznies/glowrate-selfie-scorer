@@ -4,6 +4,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useState, useCallback, useMemo } from 'react';
 import { ScanResult, UserProfile } from '@/types';
 import { trpc } from '@/lib/trpc';
+import { imageUriToBase64 } from '@/lib/image-utils';
 
 const STORAGE_KEYS = {
   SCAN_HISTORY: 'glow_scan_history',
@@ -95,12 +96,22 @@ export const [GlowProvider, useGlow] = createContextHook(() => {
     setIsProcessing(true);
     
     try {
-      const result = await processSelfieMutation.mutateAsync({ imageUri });
+      // Convert image to base64 for AI analysis
+      let imageBase64: string | undefined;
+      try {
+        imageBase64 = await imageUriToBase64(imageUri);
+      } catch (error) {
+        console.warn('Could not convert image to base64, using mock scoring');
+      }
+      
+      const result = await processSelfieMutation.mutateAsync({ 
+        imageUri,
+        imageBase64,
+      });
       
       const scan: ScanResult = {
         ...result,
         imageUri,
-        // Ensure tips match the expected type if needed, though structure should be compatible
         tips: result.tips as ScanResult['tips'], 
       };
       
