@@ -19,11 +19,21 @@ import { Card } from '@/components/ui/Card';
 const { width } = Dimensions.get('window');
 
 const LOADING_MESSAGES = [
-  'Analyzing your glow... ✨',
-  'Checking smile power... 😊',
-  'Measuring vibe levels... 🔥',
-  'Calculating style points... 💅',
-  'Almost there... 🌟',
+  'Analyzing facial geometry...',
+  'Checking vibe check...',
+  'Calculating aura...',
+  'Scanning main character energy...',
+  'Measuring face card...',
+  'Almost there...',
+];
+
+const COUPLE_LOADING_MESSAGES = [
+  'Detecting chemistry...',
+  'Measuring power dynamics...',
+  'Calculating carry percentage...',
+  'Picking a winner...',
+  'Analyzing couple vibes...',
+  'Almost there...',
 ];
 
 export default function ProcessingScreen() {
@@ -37,6 +47,7 @@ export default function ProcessingScreen() {
   const pulseAnim = useRef(new Animated.Value(1)).current;
   const progressAnim = useRef(new Animated.Value(0)).current;
   const [currentMessageIndex, setCurrentMessageIndex] = useState(0);
+  const [isCoupleMode, setIsCoupleMode] = useState(false);
 
   useEffect(() => {
     Animated.loop(
@@ -69,14 +80,18 @@ export default function ProcessingScreen() {
     }).start();
 
     const messageInterval = setInterval(() => {
-      setCurrentMessageIndex(prev => (prev + 1) % LOADING_MESSAGES.length);
+      setCurrentMessageIndex(prev => (prev + 1) % (isCoupleMode ? COUPLE_LOADING_MESSAGES.length : LOADING_MESSAGES.length));
     }, 800);
 
     const processImage = async () => {
       if (imageUri) {
+        // Randomly determine couple mode for testing (30% chance)
+        const coupleMode = Math.random() < 0.3;
+        setIsCoupleMode(coupleMode);
+        
         // Simulate waiting for animation
         await new Promise(resolve => setTimeout(resolve, 2000));
-        await processSelfie(imageUri);
+        await processSelfie(imageUri, coupleMode ? 'couple' : 'solo');
         router.replace('/results');
       }
     };
